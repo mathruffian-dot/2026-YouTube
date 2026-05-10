@@ -11,6 +11,11 @@ desktop.ini
 credentials.*
 *.pem
 
+# 人物形象照（個人隱私，不進 git）
+assets/persona/*.png
+assets/persona/*.jpg
+assets/persona/*.jpeg
+
 # Python
 __pycache__/
 *.pyc
