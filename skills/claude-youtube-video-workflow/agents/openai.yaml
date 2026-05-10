@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude YouTube Workflow"
+  short_description: "Claude Code 專用 YouTube 生產線：剪片、字幕、標題、API 封面、metadata、打包。"
+  default_prompt: "使用 claude-youtube-video-workflow 處理 raw 裡的新影片。"

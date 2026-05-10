@@ -49,7 +49,9 @@
 └── skills/             # 共用 Skill（Claude / Codex 皆可讀取）
     ├── smart-cut/      # 智能剪口播（auto-editor）
     ├── audio-to-srt/   # 語音轉字幕（Groq Whisper-large-v3-turbo）
-    └── cover-image/    # 封面圖生成（OpenAI gpt-image-2）
+    ├── cover-image/    # 封面圖生成（OpenAI gpt-image-2）
+    ├── codex-youtube-video-workflow/  # Codex 專用總控工作流
+    └── claude-youtube-video-workflow/ # Claude Code 專用總控工作流
 ```
 
 ## 封面規範（兩條線必讀）
@@ -58,24 +60,30 @@
 **所有 YouTube 封面必須使用 `assets/persona/三師爸人物形象照.png` 作為人物基準。**
 呼叫 `cover-image` Skill 時帶 `--edit assets/persona/三師爸人物形象照.png` 參數。
 gpt-image-2 在 edit 模式下會延續人物的臉、髮型、體型、穿著（黑色連帽外套、眼鏡）。
+**每一次封面都必須重新讀取並使用這張人物基準照；不得從上一張已生成封面或任何衍生圖片延續人物。**
 
 ### 2. 視覺風格指南
 **生封面前的 SOP（缺一不可）：**
 1. `Read assets/style/reference-thumbnails.png` — 用 Read 工具看頻道既有 12 張封面參考圖
 2. `Read assets/style/cover-style.md` — 讀完整風格指南（色票、構圖、主題配色規則、prompt 範本）
-3. 依影片主角決定主色：**Claude=橘 / Codex=藍 / 兩者並用=橘+藍**
-4. 撰寫 prompt 後再呼叫 `cover-image` Skill
+3. `Read assets/persona/三師爸人物形象照.png` — 每次重新讀人物基準照，不可沿用舊封面
+4. 依影片主角決定主色：**Claude=橘 / Codex=藍 / 兩者並用=橘+藍**
+5. 撰寫 prompt 後再呼叫 `cover-image` Skill
 
 > 規則衝突時的優先序：人物基準照 > 風格指南 > 個別影片 prompt 變化
 
 ## Skills 使用須知
-`skills/` 內的三個 Skill 是給本專案專用的副本（其中兩個複製自全域 Skill），目的是讓 Codex 也能在同一專案內讀到它們的 `SKILL.md` 與腳本。
+`skills/` 內存放本專案專用 Skill。Codex 與 Claude Code 的總控 Skill 分開維護，因為封面生成方式、API Key、輸出標籤與人物參考限制不同。
 
 | Skill | 路徑 | 觸發時機 |
 |-------|------|---------|
+| Claude 總控工作流 | `skills/claude-youtube-video-workflow/SKILL.md` | Claude Code 要一次跑完整 YouTube 生產線 |
+| Codex 總控工作流 | `skills/codex-youtube-video-workflow/SKILL.md` | Codex 要一次跑完整 YouTube 生產線（不要給 Claude 混用） |
 | 智能剪口播 | `skills/smart-cut/SKILL.md` | 原始影片 → 去靜音後的影片 |
 | 語音轉字幕 | `skills/audio-to-srt/SKILL.md` | 剪好的影片/音訊 → SRT |
 | 封面圖生成 | `skills/cover-image/SKILL.md` | 需要 YouTube 封面、社群圖 |
+
+`skills-backup/` 另存 Codex / Claude 兩份總控 Skill，方便複製到其他專案或全域 skills。
 
 > Claude Code 端：`audio-to-srt` 與 `cover-image` 仍以全域 `~/.claude/skills/` 為主，本資料夾的副本是給 Codex 讀的「離線版」。`smart-cut` 是專案原生 Skill。
 >

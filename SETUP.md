@@ -15,6 +15,9 @@
 5. **打包**：剪好的影片 + 字幕 + 純文字 + 封面 + metadata，全部放在 `output/<標題> [Claude]/` 或 `output/<標題> [Codex]/`（依執行的 AI Agent 標記，方便 A/B 比較）
 
 整個流程由 **Claude Code** 與 **OpenAI Codex** 透過 `HANDOFF.md` 接力完成。
+若要讓 AI 一次依序跑完整流程，依使用的 Agent 選擇總控 Skill：
+- Codex：`skills/codex-youtube-video-workflow/SKILL.md`
+- Claude Code：`skills/claude-youtube-video-workflow/SKILL.md`
 
 ---
 
@@ -126,7 +129,10 @@ ffmpeg -version  # 確認有裝
 ```bash
 # 把影片放進 raw/<隨意取個影片代號>/原始.mp4
 # 然後在 Claude Code 或 Codex 裡說：
-> 處理 raw/<影片代號>，主角是 Claude
+> 使用 codex-youtube-video-workflow 處理 raw/<影片代號>，主角是 Codex
+
+# 或在 Claude Code 裡說：
+> 使用 claude-youtube-video-workflow 處理 raw/<影片代號>，主角是 Claude
 ```
 
 AI 會：

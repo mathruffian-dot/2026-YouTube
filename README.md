@@ -33,10 +33,14 @@ raw/<影片代號>/原始.mp4
 - **OpenAI Codex** → 讀 [`AGENTS.md`](./AGENTS.md)
 - **接班交接** → 讀寫 [`HANDOFF.md`](./HANDOFF.md)
 
-## 三個 Skill
+## 五個 Skill
+- [`skills/codex-youtube-video-workflow/`](./skills/codex-youtube-video-workflow/SKILL.md) — Codex 專用總控工作流（使用內建 Image2）
+- [`skills/claude-youtube-video-workflow/`](./skills/claude-youtube-video-workflow/SKILL.md) — Claude Code 專用總控工作流（使用 cover-image / OpenAI API）
 - [`skills/smart-cut/`](./skills/smart-cut/SKILL.md) — 智能剪口播（auto-editor）
 - [`skills/audio-to-srt/`](./skills/audio-to-srt/SKILL.md) — 語音轉字幕（Groq Whisper）
 - [`skills/cover-image/`](./skills/cover-image/SKILL.md) — 封面圖生成（gpt-image-2）
+
+`skills-backup/` 另存 Codex / Claude 兩份總控 Skill，方便複製到其他專案或全域 skills。
 
 ## 個人化資產
 - [`assets/persona/`](./assets/persona/README.md) — 你的人物形象照

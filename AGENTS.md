@@ -27,14 +27,18 @@
 
 | Skill | 路徑 | 用途 |
 |-------|------|------|
+| Codex 總控工作流 | `skills/codex-youtube-video-workflow/SKILL.md` | Codex 專用，串接剪片、字幕、標題、內建 Image2 封面、metadata、打包 |
 | 智能剪口播 | `skills/smart-cut/SKILL.md` | auto-editor 去靜音 |
 | 語音轉字幕 | `skills/audio-to-srt/SKILL.md` | 音訊 → SRT（先剪片再轉字幕，時間碼才對齊） |
 | 封面圖生成 | （見下方備註）| **使用你內建的 image 2 生圖工具**，不要呼叫 `skills/cover-image/draw.py`（那是給 Claude Code 用的）|
+
+Codex 總控 Skill 另有備份副本：`skills-backup/codex-youtube-video-workflow/`。Claude Code 的總控 Skill 另在 `skills/claude-youtube-video-workflow/`，不要混用。
 
 ### 封面生成（Codex 專用方式）
 你內建 image 2 生圖功能，**直接用內建工具產封面**，不需要 OpenAI API Key、不要跑 draw.py。
 但風格規範與人物基準照仍須遵守：
 - 把 `assets/persona/三師爸人物形象照.png` 當作人物基準傳給內建工具（如果內建工具支援 reference image）
+- **每一次封面都必須重新參考 `assets/persona/三師爸人物形象照.png`；不得從上一張已生成封面或任何衍生圖片延續人物。**
 - prompt 依 `assets/style/cover-style.md` 風格指南撰寫
 - 主色依影片主角決定（Claude=橘 / Codex=藍 / 兩者並用=橘+藍）
 - 輸出存到 `output/<標題>/cover.png`
@@ -50,8 +54,9 @@
    - **封面 SOP**（缺一不可）：
      a. `Read assets/style/reference-thumbnails.png`（看頻道既有封面）
      b. `Read assets/style/cover-style.md`（讀完整風格指南）
-     c. 依影片主角決定主色：Claude=橘 / Codex=藍 / 兩者並用=橘+藍
-     d. 撰寫 prompt → **用你內建的 image 2 生圖工具**產封面（人物基準照當 reference image），存到 `output/<標題> [Codex]/cover.png`
+     c. `Read assets/persona/三師爸人物形象照.png`（每次重新讀人物基準照；不可沿用舊封面）
+     d. 依影片主角決定主色：Claude=橘 / Codex=藍 / 兩者並用=橘+藍
+     e. 撰寫 prompt → **用你內建的 image 2 生圖工具**產封面（人物基準照當 reference image），存到 `output/<標題> [Codex]/cover.png`
    - AI 寫 metadata.md（描述 / 社群 / SEO，**SEO 區塊必含「YouTube 標籤欄位（直接複製）」逗號分隔版**）
 8. 把 .cut.mp4、.srt、.txt、封面、metadata 全搬進 `output/<標題> [Codex]/`，影片改名為 `<標題>.mp4`
 9. 更新 `HANDOFF.md`
