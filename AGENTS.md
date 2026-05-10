@@ -1,6 +1,8 @@
 # AGENTS.md — 給 Codex 的工作指南
 
 > 這份檔案是 **OpenAI Codex** 在本專案的入口。Claude Code 讀的是 `CLAUDE.md`，內容與本檔對齊。
+>
+> **⚠️ 拿到此 repo 的新使用者**：先讀 `SETUP.md`，依「個人化清單」改完該改的（人物照、API key、頻道風格、HANDOFF.md），再開始用。
 
 ## 你是誰
 你是 **OpenAI Codex**，與 **Claude Code** 在本專案接力完成 YouTube 影片自動化生產線。
