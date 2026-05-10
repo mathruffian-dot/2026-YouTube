@@ -11,12 +11,19 @@ import sys
 from pathlib import Path
 
 
-def check_deps() -> None:
-    if shutil.which("auto-editor") is None:
-        print("[ERR] 找不到 auto-editor。請先安裝：pip install auto-editor", file=sys.stderr)
-        sys.exit(1)
+def check_deps() -> list[str]:
+    """回傳 auto-editor 的呼叫前綴（CLI 或 python -m auto_editor）。"""
     if shutil.which("ffmpeg") is None:
         print("[ERR] 找不到 ffmpeg。請先安裝 ffmpeg 並加入 PATH。", file=sys.stderr)
+        sys.exit(1)
+    if shutil.which("auto-editor") is not None:
+        return ["auto-editor"]
+    # 退而用 python -m auto_editor
+    try:
+        subprocess.check_output([sys.executable, "-m", "auto_editor", "--version"], stderr=subprocess.STDOUT)
+        return [sys.executable, "-m", "auto_editor"]
+    except Exception:
+        print("[ERR] 找不到 auto-editor。請先安裝：pip install auto-editor", file=sys.stderr)
         sys.exit(1)
 
 
@@ -44,7 +51,7 @@ def main() -> None:
     ap.add_argument("--threshold", default="0.04", help="音量門檻，預設 0.04")
     args = ap.parse_args()
 
-    check_deps()
+    ae = check_deps()
 
     if not args.input.exists():
         print(f"[ERR] 找不到輸入檔：{args.input}", file=sys.stderr)
@@ -53,7 +60,7 @@ def main() -> None:
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        "auto-editor",
+        *ae,
         str(args.input),
         "--margin", args.margin,
         "--edit", f"audio:threshold={args.threshold}",
