@@ -28,6 +28,11 @@
 - 封面 png 是 1536x1024（3:2），YouTube 建議 1280x720（16:9）— 視覺上沒太大差，需要的話可以後處理裁切
 - smart-cut 預設 threshold 0.04 對這位口播者太鬆，這支影片用 0.06 才剛好。下一支可以先試 0.05 找平衡。
 
+## 封面生成規範（2026-05-10 新增）
+**所有封面必須以 `assets/persona/三師爸人物形象照.png` 作為人物基準。**
+呼叫 `cover-image` Skill 時帶 `--edit assets/persona/三師爸人物形象照.png`。
+細節見 `CLAUDE.md` §「封面人物基準照」。
+
 ## 環境前置確認
 | 項目 | 確認方式 | 備註 |
 |------|---------|------|
@@ -38,6 +43,11 @@
 ---
 
 ## 交班歷史（新的寫在最上面）
+
+### 2026-05-10（傍晚 v2）— 加入封面人物基準規範
+- 使用者提供 `三師爸人物形象照.png`，搬到 `assets/persona/`
+- 規範寫進 CLAUDE.md / AGENTS.md / skills/cover-image/SKILL.md：所有封面必帶 `--edit assets/persona/三師爸人物形象照.png`
+- 第一支影片封面已重生，人物樣貌（眼鏡、黑外套、髮型）完美延續
 
 ### 2026-05-10（傍晚）— Claude Code 跑完第一支影片
 - 全流程實證：smart-cut → audio-to-srt → 10 標題 → 使用者選 #7 → 封面 + metadata

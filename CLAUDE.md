@@ -41,11 +41,24 @@
 │   ├── metadata/       # 描述 / 社群貼文 / SEO / 標題候選
 │   └── final/          # 最終交付的成品影片
 ├── projects/           # 一支影片開一個子資料夾，便於管理
+├── assets/             # 跨影片共用素材
+│   └── persona/        # 人物形象基準照（封面強制使用）
+│       └── 三師爸人物形象照.png
 └── skills/             # 共用 Skill（Claude / Codex 皆可讀取）
     ├── smart-cut/      # 智能剪口播（auto-editor）
     ├── audio-to-srt/   # 語音轉字幕（Groq Whisper-large-v3-turbo）
     └── cover-image/    # 封面圖生成（OpenAI gpt-image-2）
 ```
+
+## 封面人物基準照（重要規範）
+**所有 YouTube 封面必須使用 `assets/persona/三師爸人物形象照.png` 作為人物基準。**
+
+實作方式：呼叫 `cover-image` Skill 時帶 `--edit assets/persona/三師爸人物形象照.png` 參數。gpt-image-2 在 edit 模式下會延續人物的臉、髮型、體型、穿著（黑色連帽外套、眼鏡）。
+
+prompt 撰寫要點：
+- 在描述中說明「畫面右側放置這位男性教師（戴眼鏡、黑色連帽外套）」之類的位置語意
+- **不要**改變人物五官、外套顏色、眼鏡（gpt-image-2 在 edit 模式下會盡量保留，但 prompt 矛盾會破功）
+- 場景、背景、配色、文字標題都可以自由設計
 
 ## Skills 使用須知
 `skills/` 內的三個 Skill 是給本專案專用的副本（其中兩個複製自全域 Skill），目的是讓 Codex 也能在同一專案內讀到它們的 `SKILL.md` 與腳本。
@@ -75,7 +88,7 @@
 7. **使用者選定標題後**：
    - 把標題清洗成合法資料夾名 → 建 `output/<標題>/`
    - **平行**產出：
-     - 觸發 `cover-image` Skill 生封面（用標題當素材）→ `output/<標題>/cover.png`
+     - 觸發 `cover-image` Skill 生封面（**必帶 `--edit assets/persona/三師爸人物形象照.png`**，用標題當素材）→ `output/<標題>/cover.png`
      - AI 寫 YouTube 影片描述 → 寫進 `metadata.md`
      - AI 寫社群貼文（FB / IG / Threads 各一）→ 寫進 `metadata.md`
      - AI 列 SEO 關鍵字 → 寫進 `metadata.md`

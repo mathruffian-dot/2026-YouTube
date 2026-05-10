@@ -8,6 +8,18 @@ description: OpenAI gpt-image-2 生圖技能（全域可用）。當使用者要
 ## 用途
 以 OpenAI 最新 gpt-image-2 模型生成圖片，支援 2.0 的新能力：正確文字渲染、多圖一致性（最高 8 張）、推理式構圖。
 
+## 在本專案（2026Youtube）的特別規範
+**所有 YouTube 封面必須以 `assets/persona/三師爸人物形象照.png` 作為人物基準。**
+標準呼叫：
+```bash
+python skills/cover-image/draw.py "封面 prompt..." \
+  --edit "assets/persona/三師爸人物形象照.png" \
+  --size 1536x1024 --quality low \
+  --name cover --outdir "output/<標題>/"
+```
+gpt-image-2 在 edit 模式下會延續人物的臉、髮型、體型、穿著（黑外套、眼鏡）。
+prompt 中可描述人物位置與場景，但**不要**指定矛盾的五官、外套顏色、眼鏡屬性。
+
 ## 觸發情境
 使用者說出：
 - 「畫一張 XX」「生一張圖」「做一張圖」

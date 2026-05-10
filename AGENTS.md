@@ -26,7 +26,7 @@
 |-------|------|------|
 | 智能剪口播 | `skills/smart-cut/SKILL.md` | auto-editor 去靜音 |
 | 語音轉字幕 | `skills/audio-to-srt/SKILL.md` | 音訊 → SRT（先剪片再轉字幕，時間碼才對齊） |
-| 封面圖生成 | `skills/cover-image/SKILL.md` | gpt-image-2 生圖 |
+| 封面圖生成 | `skills/cover-image/SKILL.md` | gpt-image-2 生圖（**必帶 `--edit assets/persona/三師爸人物形象照.png` 作為人物基準**） |
 
 ## 標準工作流
 1. `raw/<影片代號>/原始.mp4` 進來
@@ -35,7 +35,7 @@
 4. ffmpeg 抽音訊 → 跑 `audio-to-srt` → `.srt` + `.txt`
 5. 讀字幕生 10 個標題 → `working/<影片代號>/titles.md`，**停下等使用者挑**
 6. 使用者挑完 → 把標題清洗成合法資料夾名（去除 `？！：／＼?!:/\\<>|"*`）→ 建 `output/<標題>/`
-7. 平行：`cover-image` 生封面 + AI 寫 metadata.md（描述 / 社群 / SEO）
+7. 平行：`cover-image` 生封面（**必帶 `--edit assets/persona/三師爸人物形象照.png`**） + AI 寫 metadata.md（描述 / 社群 / SEO）
 8. 把 .cut.mp4、.srt、.txt、封面、metadata 全搬進 `output/<標題>/`，影片改名為 `<標題>.mp4`
 9. 更新 `HANDOFF.md`
 
