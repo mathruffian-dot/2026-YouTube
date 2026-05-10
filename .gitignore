@@ -39,3 +39,6 @@ working/**
 
 # 圖片暫存
 generated/
+
+# Claude Code worktrees（本機暫存，不進 git）
+.claude/worktrees/

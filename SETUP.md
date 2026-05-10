@@ -30,6 +30,7 @@
 | Python 3.10+ | 跑 Skill 腳本 | python.org |
 | ffmpeg | 影音處理 | `winget install Gyan.FFmpeg`（Win）/ `brew install ffmpeg`（Mac）|
 | auto-editor | smart-cut 剪口播 | `pip install auto-editor` |
+| groq (Python SDK) | audio-to-srt 呼叫 Groq Whisper | `pip install groq` |
 | openai (Python SDK) | cover-image 呼叫 OpenAI | `pip install openai` |
 | Git | 版本控制 | git-scm.com |
 | Claude Code 或 OpenAI Codex CLI | AI Agent | 看你習慣哪一個 |
@@ -111,9 +112,48 @@
 ```bash
 git clone https://github.com/<your>/<your-repo>.git
 cd <your-repo>
-pip install auto-editor openai
+pip install auto-editor groq openai
 ffmpeg -version  # 確認有裝
 ```
+
+### Step 1.5 — 環境驗證（逐條跑，全過才繼續）
+
+```powershell
+# 1. Python
+python --version                  # 要 3.10+
+
+# 2. ffmpeg
+ffmpeg -version                   # 看到版本號即可
+
+# 3. auto-editor（exit code 255 是正常的，看到版本號就對了）
+python -m auto_editor --version
+
+# 4. Python 套件
+python -c "import groq; print('groq ok')"
+python -c "import openai; print('openai ok')"
+
+# 5. Groq API Key
+python -c "
+import os, pathlib
+key_file = pathlib.Path('~/.groq_api_key').expanduser()
+key = os.getenv('GROQ_API_KEY') or (key_file.read_text().strip() if key_file.exists() else '')
+print('Groq key:', 'ok' if key else '缺 — 請照 Step 2 設定 ~/.groq_api_key')
+"
+
+# 6. OpenAI API Key（只在用 Claude Code 封面功能時需要）
+python -c "
+import os, pathlib
+p = pathlib.Path('~/.openai.env').expanduser()
+key = os.getenv('OPENAI_API_KEY', '')
+if not key and p.exists():
+    for line in p.read_text().splitlines():
+        if line.startswith('OPENAI_API_KEY='):
+            key = 'from file'
+print('OpenAI key:', key if key else '未設定（只在 Claude Code 封面生成時需要）')
+"
+```
+
+> **Windows 提醒**：含中文的路徑請用 **PowerShell**（不是 Git Bash）執行以上指令，避免編碼問題。
 
 ### Step 2 — 把 Step 3 的個人化清單跑一遍
 特別注意：**人物照、HANDOFF.md、API keys** 三件事不弄好，後面跑不動。
@@ -177,10 +217,19 @@ GitHub 是強烈推薦保留（影片大檔已在 `.gitignore` 排除，repo 不
 A：去 platform.openai.com/settings/organization/general 做 Individual 驗證。
 
 **Q：smart-cut 把我講話的句子剪掉了？**
-A：threshold 太嚴，調鬆（0.06 → 0.04）。
+A：threshold 太嚴，調鬆（0.06 → 0.04）；或把 margin 從 `0sec,0.1sec` 改成 `0.2sec,0.2sec`，每句話前後多留一點緩衝。
+
+**Q：threshold 跟 margin 怎麼調？**
+A：`--threshold` 是音量門檻（多小算靜音，0.06 = 6%，越大剪越多）；`--margin` 是每段語音前後保留的緩衝時間（格式 `前,後`，例如 `0sec,0.1sec` 表示開頭不留、結尾留 0.1 秒）。講話停頓多的口播者建議從 threshold 0.06 開始試。
 
 **Q：字幕時間碼跟剪好的影片對不上？**
 A：你應該是對「原始檔」轉字幕了。**先剪後轉**，順序顛倒會錯位。
+
+**Q：`import groq` 出現 ModuleNotFoundError？**
+A：`pip install groq` 裝一下，這個套件是字幕流程的必要依賴，早期版本的 SETUP.md 漏掉了。
+
+**Q：`python -m auto_editor --version` 跑完 exit code 255？**
+A：正常現象，auto-editor 的 `--version` 就是回傳 255，不是錯誤。只要看到版本號印出來就代表裝好了。
 
 **Q：我用的是其他 AI（Gemini、本地 LLM），這個 repo 還能用嗎？**
 A：核心 Skill（smart-cut / audio-to-srt / cover-image）跟 AI Agent 解耦，本身就能獨立呼叫。但「10 標題候選 / 描述撰寫」步驟需要 LLM 推理，要自己改成你用的 LLM。

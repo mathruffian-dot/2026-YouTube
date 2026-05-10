@@ -6,7 +6,27 @@
 ---
 
 ## 目前狀態（最新）
-- **更新時間**：2026-05-10
+- **更新時間**：2026-05-10（晚）
+- **最後操作者**：Claude Code（Sonnet 4.6）
+- **進度**：第二支影片完成全流程
+  - 影片：`我用 Claude Code 桌面版 + Codex App 的理由 - GUI 功能跟 CLI 幾乎一樣`
+  - 原始 2:33 → smart-cut（threshold 0.06、margin 0/0.1s）→ 1:20（剪掉 47.7%）
+  - audio-to-srt 完成清字（44 段、662 字）
+  - 標題候選 10 個 → 使用者選 #9
+  - 封面（橘藍雙色，CLI 禁止符號 + Codex/Claude GUI 視窗）完成
+  - 全部素材在 `output/我用 Claude Code 桌面版 + Codex App 的理由 - GUI 功能跟 CLI 幾乎一樣 [Claude]/`
+- **本次新補裝（換機或新機必做）**：
+  - `pip install auto-editor`（SETUP.md Step 1 原已列出）
+  - `pip install groq`（SETUP.md 漏列，本次補上）
+
+## 下一步（給下一個 AI）
+- 第二支影片**待上架 YouTube**，使用者確認封面、文案後即可上傳
+- 第一支影片同樣尚未確認上架
+- `raw/` 內尚有：`用 AI Agent 來幫忙寫年度領域課程計畫.mp4`，等使用者指示
+
+---
+
+## 上一次狀態（2026-05-10 上午）
 - **最後操作者**：Claude Code（Opus 4.7）
 - **進度**：第一支影片完成全流程
   - 影片：`你還在手動填課程計畫嗎 AI Agent 教師工作流實演`
@@ -30,9 +50,6 @@
   - 總控 Skill 已拆分：Codex 用 `skills/codex-youtube-video-workflow/`，Claude Code 用 `skills/claude-youtube-video-workflow/`；備份在 `skills-backup/`
   - 測試產物在 `working/codex-flow-test/`（被 `.gitignore` 忽略）
 
-## 下一步（給下一個 AI）
-- 第一支影片**還沒上架 YouTube**，使用者可能會回來確認封面、文案要不要再改
-- 等下一支影片素材丟進 `raw/`
 
 ## 已知議題 / 待解問題
 - 封面 png 是 1536x1024（3:2），YouTube 建議 1280x720（16:9）— 視覺上沒太大差，需要的話可以後處理裁切
