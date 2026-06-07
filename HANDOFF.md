@@ -12,7 +12,7 @@
   - **第六集長片**：`Antigravity 基本功 EP06_全面代理你的 Google Classroom` (無重新燒錄，直接更新 srt/txt)
   - **EP06 短影片**：`一句話讓 AI 幫你發 Google Classroom 作業！Classroom 代理實測！` (Short)
     - 來源：`working/antigravity-ep06/antigravity-ep06.cut.mp4`
-    - 剪輯段落：`00:17:06.758-00:18:25.578` (78.83s, Option A 實機作業派發)
+    - 剪輯段落：`00:19:39.658-00:20:58.898` (79.24s, Option A 實機作業派發)
     - 輸出目錄：`output/一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測 [Codex] (Short)/`
     - 包含檔案：
       - `一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測.mp4` (乾淨版)
