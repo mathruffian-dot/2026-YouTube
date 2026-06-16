@@ -6,39 +6,71 @@
 ---
 
 ## 目前狀態（最新）
-- **更新時間**：2026-06-07
-- **最後操作者**：Antigravity (OpenAI Codex)
-- **進度**：EP06 短影片精華剪輯與製作完成。
-  - **第六集長片**：`Antigravity 基本功 EP06_全面代理你的 Google Classroom` (無重新燒錄，直接更新 srt/txt)
-  - **EP06 短影片**：`一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測` (Short)
-    - 來源：`working/antigravity-ep06/antigravity-ep06.cut.mp4`
-    - 剪輯段落：`00:21:02.898-00:21:43.098` 與 `00:22:47.098-00:23:35.838` (共 88.94s，跳過等待時間與口誤)
-    - 結尾字卡：末端新增 3 秒「詳細影片請看留言」字卡（總長度 91.90s）
-    - 輸出目錄：`output/一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測 [Codex] (Short)/`
-    - 包含檔案：
-      - `一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測.mp4` (乾淨版，91.90s，含 3 秒字卡)
-      - `一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測_字幕版.mp4` (燒錄字幕版，91.90s，含 3 秒字卡，字幕已重新燒錄對齊)
-      - `一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測.srt`
-      - `一句話讓 AI 幫你發 Google Classroom 作業 Classroom 代理實測.txt`
-      - `cover.png` (Codex 藍色系封面，以 `三師爸人物形象照.png` 為人物基準)
-      - `metadata.md` (包含短影片描述、社群貼文、SEO 與標籤)
-- **術語修正歷史 (EP04)**：
-  - `"一夜式漫畫" / "一夜市漫畫" / "一月四漫畫" / "一頁四漫畫"` -> `"一頁式漫畫"`
-  - `"四個漫畫"` -> `"四格漫畫"`
-  - `"report"` -> `"repo"` (case-insensitive)
-  - `"A群" / "AI群"` -> `"agents"`
-    - `Google Claude` / `Claude Console` / `Claude API` ➡️ `Google Cloud` / `Google Cloud Console` / `Google Cloud API`
-    - `AGE` / `engine` / `Edging` ➡️ `Agent`
-    - `A群` ➡️ `Agents`
-    - `classroom ag` ➡️ `Classroom Agent`
-    - `Antigravity` ➡️ `AntiGravity` (統一大小寫，但保留最終資料夾名稱為 `Antigravity` 以與原始檔名一致)
-    - 成果目錄：`output/Antigravity 基本功 EP06_全面代理你的 Google Classroom [Codex]/`，包含影片 `.mp4`、字幕 `.srt`、與純文字稿 `.txt`。
-- **之前進度**：
-  - 第五集長片與短片剪輯製作完成（詳見下方交班歷史）。
+- **更新時間**：2026-06-15（深夜）
+- **最後操作者**：Claude Code（Opus 4.8）
+- **進度**：**AI Agent 基本功 EP01（用 Agent 學 Agent）長片＋短片全流程交付完成** ✅
+  - 來源：`raw/aiagent-ep01/aiagent-ep01.mp4`（原長 75:20 / 2.44GB，來自使用者 Downloads；**VFR**）
+  - **預防 VFR 黑畫面**：剪前先 ffprobe 確認 avg_frame_rate 非整數比 → 先轉 CFR（`-fps_mode cfr -r 30 -crf 18 -c:a copy`）再剪，全程驗證亮度正常
+  - **GDrive 寫入坑（新）**：auto-editor 直接輸出到 GDrive 路徑時，檔案會在 smart_cut 報 OK 後消失（疑似 GDrive 同步脫水）。解法：輸出到本機 `C:\temp\`，再 `cp` 搬回專案。建議日後長片 smart-cut 一律輸出本機再搬回。
+  - smart-cut（threshold 0.06、margin `0sec,0.1sec`）→ 48:48（剪 35.2%）
+  - 轉字幕：Groq 11992 字 → resegment 1154 段 → apply_vocab → STOP1 使用者確認 8 處 → 套全部更正 → validate 硬關卡通過（1154 段全吻合）→ 刪 11 段抖內/喊名段重編號 → 最終 1143 段
+  - **本集詞彙更正重點**（AI Agent 系列日後可沿用）：
+    - Agent 家族：`A-GEN/Agin/Aging/AI Aging/AIH/AIA群/A群/agy/AIGEN` → **Agent / AI Agent**
+    - 生成式：`生程式/真程式/真誠式/聖誠士/聖德斯/深層式/生存式/Sense4/CN4` → **生成式**
+    - `Antigravity/Antigrity/Ntegraf2/MTGRAVIT2/agy/HGY` → **AntiGravity**；`Podex`→Codex、`Deepthic`→DeepSeek
+    - 使用者拍板：GPT5.5/Gemini3.5/Fable **保留原文**；`充WL的服務員員`→充值；`破搓`→裹足不前；**抖內/觀眾名段落全刪**
+  - 長片標題使用者選 #10：「一個 GitHub repo，複製我的整套 AI 工作流到你的 Agent」
+  - 長片交付：`output/一個 GitHub repo，複製我的整套 AI 工作流到你的 Agent [Claude]/`（5 檔齊全；封面橘色、GitHub repo 複製 Agent 大軍主視覺）
+  - **短片也已交付** ✅（A 痛點型，67.5s＋3s 字卡＝70.5s）：
+    - 標題：「AI Agent 就是你的第二大腦」
+    - 精華組合（3 段）：00:13:27.9-00:14:04.9 切換工具痛點 → 00:14:40.9-00:15:00.8 Agent 解放勞務 → 00:16:17.3-00:16:27.7 第二大腦收尾
+    - 交付：`output/AI Agent 就是你的第二大腦 [Claude] (Short)/`（6 檔齊全）
+  - **短片 C 版也已加剪交付** ✅（C 承諾型，49.9s＋3s 字卡＝52.9s，<60s 進 Shorts feed）：
+    - 標題使用者選：「AI 時代，工作流可以一鍵複製給別人的 Agent」
+    - 精華組合（3 段）：00:46:35.5-00:46:51.5 一個 repo＝複製一整個部隊 → 00:46:54.1-00:47:09.2 丟網址全自動跑一遍 → 00:47:16.2-00:47:34.8 複製任何人工作流、寫給 Agent 看
+    - 交付：`output/AI 時代，工作流可以一鍵複製給別人的 Agent [Claude] (Short)/`（6 檔齊全；封面橘色、GitHub 一鍵複製 Agent 大軍）
+  - 注意：影片中承諾「用 Agent 學 Agent 知識庫 repo 連結放說明欄」，上架時務必補上
+- **前一支**：**AntiGravity EP07（Padlet MCP）長片＋短片全流程交付完成** ✅
+  - 來源：`raw/antigravity-ep07/antigravity-ep07.mp4`（原長 48:18 / 1.56GB，來自使用者 Downloads）
+  - smart-cut（threshold 0.06、margin `0sec,0.1sec`）→ 28:44（剪 40.5%）
+  - 轉字幕：Groq 7288 字 → resegment 741 段（平均 2.33s）→ apply_vocab → STOP1 使用者確認 8 處疑慮 → finalize 套 155 段修正 → validate 硬關卡通過（741 段全吻合）→ 依使用者指示刪除段 740（觀眾暱稱）重編號 → 最終 740 段 / 10925 字
+  - **本集詞彙更正重點**（Padlet 系列日後可沿用）：
+    - `Pellet/Pallet/Paylet/Pelet/Petlet/Headlet/Panelad/Pairline/Panelette/Panet/配列` → **Padlet**
+    - `Agin/A群/AIA群/A集員/Edging/AI Aging/AIAG/AIG/AGE` → **Agent / AI Agent**
+    - 使用者拍板：`RuneIt`→ZoomIt、`提消`→提交、`先路`→嵌入、`未教育真人`→為教育增能、`資源供應`→支援供應、`圈的留言`→全部的留言
+  - 長片標題使用者選 #9：「一句話生成 Padlet 課程牆：分區、投票、AI 插圖全自動完成」
+  - 長片交付：`output/一句話生成 Padlet 課程牆_分區、投票、AI 插圖全自動完成 [Claude]/`（5 檔齊全；封面橘色主題、Padlet 牆主視覺）
+  - **短片也已交付** ✅（A 痛點型，105.9s＋3s 字卡＝108.9s）：
+    - 標題：「一句話，AI 幫你開好整面 Padlet」
+    - 精華組合（4 段，對齊字幕邊界）：00:10:12.5-00:10:56.7 手動建牆痛點→Agent 開好 → 00:11:28.1-00:11:44.0 自動分區 → 00:12:19.8-00:12:40.4 投票實證 → 00:18:44.1-00:19:09.4 無限電子佈告欄金句
+    - 交付：`output/一句話，AI 幫你開好整面 Padlet [Claude] (Short)/`（6 檔：乾淨版 mp4／字幕版 mp4／srt／txt／cover／metadata）
+  - 注意：影片中多次承諾「repo 連結放說明欄」，**上架時務必放 Padlet MCP 的 GitHub repo 連結**（metadata checklist 已標註）
+  - **黑畫面事故與修復（2026-06-12）**：第一版 cut.mp4 從 2:37 起全黑（僅有聲音）。原因：原始螢幕錄影是 **VFR（可變幀率）**，auto-editor 重編碼中途輸出黑幀。修復：先 `ffmpeg -fps_mode cfr -r 30 -c:v libx264 -crf 18 -c:a copy` 轉 CFR，再重跑 auto-editor——因音訊未動，新剪輯版時長與舊版毫秒級一致（1724.466s），字幕無需重做。長片與短片交付檔皆已用修復版覆蓋並逐點驗證亮度。
+- **之前進度**：OpenCode EP04 長片＋短片交付（2026-06-08，詳見交班歷史）。
+  - 影片：`Open Code 基本功EP04_ 免費 Agent組裝你的 Agent 大軍_無限解放token.mp4`（原長 93:54 / 3.27GB）
+  - smart-cut（threshold 0.06、margin `0sec,0.1sec`）→ 52:43（剪 43.9%，這位口播者較連續、剪除率比實演片低屬正常）
+  - 轉字幕：Groq 13947 字 → resegment 1387 段（平均 2.28s，防斷字 OK）→ apply_vocab → STOP1 疑慮確認 → 23 段套用更正
+  - **本集詞彙更正重點**（之後若再剪三師爸 OpenCode 系列可沿用）：
+    - 模型名統一：`Gemma412B` / `Gemma 412B` → **Gemma 4 12B**（使用者確認）
+    - `CLA` → **CLI**；`Claude Go`→Claude Code；`Opensure`→OpenCode
+  - validate 時間碼硬關卡通過（1387 段全吻合）
+  - 標題候選 10 個 → 使用者選 **#3**「OpenCode 基本功 EP04：免費組裝你的 Agent 大軍，無限解放 Token」
+  - 封面（gpt-image-2 low、橘色 Claude 主題、指揮官+士兵大軍構圖）+ metadata.md（兩套合併規格）全部產出
+  - 交付路徑：`output/OpenCode 基本功 EP04_免費組裝你的 Agent 大軍，無限解放 Token [Claude]/`（5 檔齊全）
+- **這次用的是擴充後總控**：`claude-youtube-video-workflow` 已縫入 3 個 STOP 關卡 + 時間碼硬關卡 + marketing-spec.md；本支即按新流程跑完。
+- **之前進度**：Antigravity(Codex) 封裝 `video-editing-and-subtitles` 技能；EP05/EP06 短長片交付（詳見下方歷史）。
+
+- **短片也已交付** ✅（B 好奇型，93s）：
+  - 標題：「聰明人都這樣用 AI：軍師指揮、大軍出工」
+  - 精華組合（4 段）：00:26:05-13 派工概念 hook → 00:27:52-00:28:23 軍師/士兵分工 → 00:45:28-50 Token 經濟學 → 00:47:49-00:48:17 收尾 CTA
+  - 交付路徑：`output/聰明人都這樣用 AI_軍師指揮、大軍出工 [Claude] (Short)/`（6 檔：乾淨版 mp4／字幕版 mp4／srt／txt／cover／metadata）
+  - 修正：結尾「AA君大君」→「AI 大軍」（長片字幕也一併修正回寫）；段 158「Gemma 4設備」→「Gemma 4 12B」
 
 ## 下一步（給下一個 AI）
-- 目前 EP06 剪片、字幕與純文字稿已全部交付，等待使用者下一步命令（例如生封面、文案或進行短片提取）。
-- `raw/` 下尚有 `用 AI Agent 來幫忙寫年度領域課程計畫.mp4` 與 `AI_agents的基本認識.mp4` 可依需要處理。
+- AntiGravity EP07 長片＋短片**皆已交付**，等待使用者下一步指令。
+- 長片章節時間碼為建議值（metadata.md §5），上傳後請對照成片微調。
+- 上架時記得在說明欄與短片留言區放 Padlet MCP repo 連結（影片中承諾）。
+- 檢查 `raw/` 下尚有：`用 AI Agent 來幫忙寫年度領域課程計畫.mp4`、`AI_agents的基本認識.mp4`、`使用 AI Agent 來自動剪輯教學影片...mp4` 可依需要處理。
 
 ---
 
@@ -79,6 +111,7 @@
 - 中途事件：人物基準照因 git 歷史清理被連帶清掉本機，使用者從 `C:/2025三師爸/viewsonic專業形像照/` 重新放回；該檔已 .gitignore，本機需保留
 
 ## 已知議題 / 待解問題
+- **VFR 原始檔會讓 auto-editor 輸出黑幀**（EP07 實際踩到：2:37 後全黑、僅剩聲音）。預防：smart-cut 前先 `ffprobe` 看 `avg_frame_rate` 是否為非整數比（如 `260793000/8693101`），是 VFR 就先轉 CFR（`ffmpeg -fps_mode cfr -r 30 -c:v libx264 -crf 18 -c:a copy`）再剪；音訊 copy 不動，剪輯點與時間軸不變。**已修復（2026-06-12）**：`smart_cut.py` 現會自動偵測 VFR 並先轉 CFR 暫存檔再剪、完成後刪暫存檔；SKILL.md 踩坑段亦已補充。
 - 封面 png 是 1536x1024（3:2），YouTube 建議 1280x720（16:9）— 視覺上沒太大差，需要的話可以後處理裁切
 - smart-cut 預設 threshold 0.04 對這位口播者太鬆，這支影片用 0.06 才剛好。下一支可以先試 0.05 找平衡。
 - `auto-editor.exe` 安裝在 `C:\Users\mathr\AppData\Roaming\Python\Python314\Scripts`，該路徑不在 PATH；但 `smart_cut.py` 會走 `python -m auto_editor`，所以不影響 Codex 執行。

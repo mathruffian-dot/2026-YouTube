@@ -54,6 +54,7 @@ python "skills/smart-cut/scripts/smart_cut.py" \
 4. → 後續封面、文案、標題
 
 ## 踩坑
+- **VFR（可變幀率）原始檔會讓 auto-editor 輸出黑幀**（EP07 實測：2:37 後全黑、僅剩聲音，常見於螢幕錄影）。`smart_cut.py` 已內建防護：剪輯前用 ffprobe 比對 `avg_frame_rate` 與 `r_frame_rate`，不一致即判定 VFR，先用 `ffmpeg -fps_mode cfr -r 30 -c:v libx264 -preset veryfast -crf 18 -c:a copy` 轉成暫存 CFR 檔再餵 auto-editor（音訊 copy，剪輯點與時間軸不變），完成後自動刪暫存檔並印出「偵測到 VFR，已先轉 CFR」。
 - **不要對「原始檔」轉字幕再剪片**：時間碼會錯位。**先剪後轉**才對齊。
 - **太短的停頓也被剪掉聽起來會很急**：把 `--margin` 拉到 `0.3s` 或更高。
 - **音樂段落會被誤判為靜音**：若影片含背景音樂段，要先標記區段，那段用 `--cut-out` 反向保護或事後手動補回。

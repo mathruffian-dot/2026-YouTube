@@ -1,9 +1,27 @@
 ---
 name: claude-youtube-video-workflow
-description: Claude Code 專用的 2026Youtube 總控工作流 Skill。當使用者要求 Claude Code 處理 raw 裡的新影片、一次跑完整 YouTube 生產線、剪口播、轉字幕、產標題、用 cover-image/draw.py 產封面、寫 metadata、打包 output，或說「使用 claude-youtube-video-workflow」時使用。此 Skill 明確走 Claude Code / OpenAI API Key 封面路線，不使用 Codex 內建 Image2。
+description: Claude Code 專用的 2026Youtube 總控工作流 Skill。當使用者要求 Claude Code 處理 raw 裡的新影片、一次跑完整 YouTube 生產線（剪口播→轉字幕→清字確認→長片打包→短片精華→雙格式行銷資訊）、剪口播、轉字幕、產標題、用 cover-image/draw.py 產封面、寫 metadata、剪 short、打包 output，或說「使用 claude-youtube-video-workflow」時使用。此 Skill 明確走 Claude Code / OpenAI API Key 封面路線，不使用 Codex 內建 Image2。
 ---
 
 # claude-youtube-video-workflow：Claude Code 版 YouTube 生產總控
+
+## 一條龍總覽（長片 → 短片 → 雙格式資訊）
+
+本 Skill 一次完成三大階段，中間有 **3 個 STOP 關卡**，每關都必須**停下等使用者拍板，不准自動往下衝**：
+
+```
+階段 1 長片：剪口播 → 轉字幕 → 🛑STOP1 疑慮字幕確認 → 時間碼硬關卡 → 標題 → 封面 → 長片 metadata → 打包
+階段 2 短片：讀完整字幕 → 亮點偵測 → 🛑STOP2 三候選確認 → 切片組片 → 短片 metadata → 打包
+（標題候選為 🛑STOP3，已含在各階段內）
+```
+
+- **🛑 STOP 1**（階段 1 step 3）：疑慮術語列出來等使用者勘誤，套完才往下。
+- **🛑 STOP 2**（階段 2）：短片 3 候選版本等使用者選編號。
+- **🛑 STOP 3**（step 4 / 短片 step）：標題候選等使用者選。
+- **硬關卡**：`validate_srt.py` 不通過（段數不一致 / 時間碼對不上）→ **中止交付並回報**，不得硬出。
+- **防斷字**：字幕切句靠 `resegment.py` 切點優先序；短片切片一律對齊字幕段落邊界，**不准切到一句話中間**。
+
+> 短片階段非必跑：使用者沒要短片就停在階段 1 收尾。要短片才接階段 2。
 
 ## 先讀
 
@@ -39,8 +57,13 @@ description: Claude Code 專用的 2026Youtube 總控工作流 Skill。當使用
 3. **轉字幕**
    - **可直接餵 cut.mp4 給 `transcribe_groq.py`**（內部自動用 ffmpeg 處理），不需先抽音訊。檔案 < 25MB Groq 直接吃；> 25MB 會自動降取樣。
    - 讀 `skills/audio-to-srt/SKILL.md`。
-   - 流程：transcribe_groq.py → resegment.py → apply_vocab.py → **Claude 親自逐段清字**（讀 vocab.srt，依規則修錯字、加標點、不動時間碼、段數不變）→ validate_srt.py → srt_to_txt.py。
+   - 流程：transcribe_groq.py → resegment.py → apply_vocab.py → **Claude 親自逐段清字**（讀 vocab.srt，依規則修錯字、加標點、不動時間碼、段數不變）→ **🛑 STOP 1 疑慮術語確認**（見下）→ validate_srt.py【硬關卡】→ srt_to_txt.py。
    - **先建立 `_subtitles/` 子資料夾**，否則 `resegment.py` 會 `FileNotFoundError`。
+   - **🛑 STOP 1：疑慮術語確認（不准跳過）**
+     1. 跑 `python skills/video-editing-and-subtitles/scripts/find_dubious_terms.py "working/<video-id>/_subtitles/<video-id>.vocab.srt" --out "working/<video-id>/_subtitles/dubious_terms.md"`，自動撈出專有名詞（Claude/Gemini/Agent…）與常見音譯錯字的段落。
+     2. **Read `dubious_terms.md`，把有疑慮的段落列在對話中，停下問使用者怎麼改**，不要自己猜了就往下。
+     3. 使用者回覆後，用 `python skills/video-editing-and-subtitles/scripts/finalize_subtitles.py "<vocab.srt>" --out "<clean.srt>" --replace "舊->新" --replace "段號:舊->新"` 套更正（特定段落限定用 `390:AGE->Agent` 格式，避免誤傷如 Gemini 中的 Gem）。
+   - **時間碼硬關卡**：`validate_srt.py --raw <vocab.srt> --clean <clean.srt>` 若段數不一致或時間碼對不上 → **中止，回報差異，不得交付**。
    - **常見 Whisper 誤判**（清字時記得修）：
      - 「燭光國中 / 竹光國中」→「光武國中」
      - 「稅教材」→「數學教材」
@@ -93,15 +116,16 @@ description: Claude Code 專用的 2026Youtube 總控工作流 Skill。當使用
      ```
    - 跑完整理：刪掉時間戳檔名版本，留 `cover.png` 一份；用 Read 工具看一眼封面確認人物樣貌正確。
 
-7. **寫 metadata**
-   - `metadata.md` 必含**七個區塊**（缺一不可）：
-     1. **YouTube 描述**：第一段 2–3 句講影片價值與目標受眾；列點寫影片重點（✅ 開頭）；補關鍵詞 hashtag。
-     2. **章節時間碼**：建議性質，依字幕大致的段落切時間。
-     3. **社群貼文**三種版本：Facebook（教師社群口吻、可長一點）、Instagram（短文+多 hashtag）、Threads（共鳴型短句）。
-     4. **SEO 關鍵字**（markdown 列表版）：主關鍵字、次關鍵字、長尾關鍵字、競品搜尋詞。
-     5. **YouTube 標籤欄位（直接複製）**：把 4 組關鍵字各做一份「半形逗號分隔」純文字版本，外加一份「**全部一次貼**」整合版（這是使用者實際會貼到 YouTube 後台的那一段）。
-     6. **上架前 checklist**：標題、封面、字幕、描述前 100 字含主關鍵字、章節時間碼確認、標籤、播放清單、社群同步發佈。
-   - 第一段描述要呼應使用者選定的標題情緒（痛點型 / 教學型 / 對比型）。
+7. **寫 metadata（依行銷規格）**
+   - **先 Read `references/marketing-spec.md`**（txt v1.5 主規格 + 頻道補充欄位的兩套合併版），一律以它為準。
+   - 吃**清字後 `.txt` 逐字稿**生成，素材要呼應字幕真實內容。長片 `metadata.md` 至少含：
+     1. **10 個標題候選**（好奇/價值/痛點三風格穿插）
+     2. **影片描述 ≤300 字**：Hook（前兩行吸睛）+ 3 個關鍵知識點列點 + CTA；第一段情緒呼應使用者選定的標題類型。
+     3. **社群貼文**（FB / IG / Threads）：**嚴禁 Emoji**、每段 ≤3 行、長片 150–200 字、誠摯老師口吻、結尾留互動問題。
+     4. **SEO 關鍵字 15–20 個** + **「全部一次貼」整合版標籤**（半形逗號分隔，使用者直接貼 YouTube 後台）。
+     5. **章節時間碼**（依字幕段落，建議性質）。
+     6. **上架前 checklist**（標題/封面/字幕/描述前 100 字含主關鍵字/標籤/播放清單/社群同步）。
+   - 細節格式與短片覆寫規則完全以 `references/marketing-spec.md` 為準。
 
 8. **打包與自我檢查**
    - 輸出資料夾應包含 **5 個檔案**（檔名不加 `[Claude]` 後綴）：
@@ -136,12 +160,20 @@ description: Claude Code 專用的 2026Youtube 總控工作流 Skill。當使用
 - 封面 prompt 矛盾（例如同時說人物穿藍色但基準照是黑色外套）→ gpt-image-2 會妥協；prompt 中只描述位置與場景，不要重新描述五官/穿著屬性。
 - **每次封面都要重新讀基準照**，不能拿前一張封面當輸入；模型會放大誤差，越生越不像。
 
-## 延伸：短片模式
-長片跑完後，使用者可能會說「再剪一個 short」。改用 `skills/short-video-workflow/SKILL.md` 接手：
-- 來源：`working/<video-id>/<video-id>.cut.mp4` + `.srt`（已是本流程的產物）
-- 規格：16:9、≤120s、3 候選版本、輸出 `output/<短片標題> [Claude] (Short)/`
-- 主色仍是 Claude 橘
-- 封面、metadata 沿用同一份風格指南與人物基準照
+## 階段 2：短片精華（要短片才跑）
+
+長片跑完（已有 `cut.mp4` + `clean.srt`）後，若使用者要短片，**接手 `skills/short-video-workflow/SKILL.md` 完整流程**。重點關卡：
+
+1. **強制完整讀 `working/<video-id>/<video-id>.srt`**：擷取精華前一定先看過整份字幕、理解時間碼，不准只看片段就抓。
+2. **亮點偵測**：依痛點/反問/數字承諾/強斷言/轉折揭密等檢核表給每段 0–3 分。
+3. **🛑 STOP 2：三候選版本確認**
+   - 組 3 個版本（A 痛點型 / B 好奇型 / C 承諾型 hook），每版三幕結構、≤120s、寫進 `working/<video-id>/shorts-candidates.md`。
+   - **列三版時間碼與三幕劇本給使用者，停下等使用者選 A/B/C**（或使用者自給時間碼）。不准自己挑。
+4. **切片組片**：`clip_cut.py` 切片（**對齊字幕段落邊界，不切到一句話中間**）→ 確認 ≤120s → `add_end_card.py` 結尾字卡 → `burn_subtitles.py` 燒字幕。
+5. **短片標題（🛑 STOP 3）**：出 3 個更短更聳動的候選等使用者選。
+6. **短片 metadata**：同樣 **Read `references/marketing-spec.md`**，套用其中「C. 短片差異」覆寫（標題 3 個、描述 ≤150 字、`#Shorts` 必備、標籤結尾加 `Shorts,短影片`）。
+
+規格：16:9、≤120s、主色 Claude 橘、輸出 `output/<短片標題> [Claude] (Short)/`，封面/人物基準照沿用同一份。
 
 ## 範例：本專案第一支影片的成果參數
 讓你知道實測 OK 的參數長相：

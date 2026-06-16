@@ -27,6 +27,63 @@ def check_deps() -> list[str]:
         sys.exit(1)
 
 
+def detect_vfr(path: Path) -> bool:
+    """用 ffprobe 比對 avg_frame_rate 與 r_frame_rate，不一致即視為 VFR（可變幀率）。"""
+    try:
+        out = subprocess.check_output([
+            "ffprobe", "-v", "error",
+            "-select_streams", "v:0",
+            "-show_entries", "stream=avg_frame_rate,r_frame_rate",
+            "-of", "default=noprint_wrappers=1",
+            str(path),
+        ], text=True)
+    except Exception as e:
+        print(f"[WARN] ffprobe 檢查幀率失敗，跳過 VFR 偵測：{e}")
+        return False
+
+    rates: dict[str, str] = {}
+    for line in out.splitlines():
+        if "=" in line:
+            key, _, val = line.partition("=")
+            rates[key.strip()] = val.strip()
+
+    avg = rates.get("avg_frame_rate", "")
+    r = rates.get("r_frame_rate", "")
+    if not avg or not r or avg in ("0/0", "N/A") or r in ("0/0", "N/A"):
+        return False
+
+    def to_float(frac: str) -> float | None:
+        try:
+            if "/" in frac:
+                num, den = frac.split("/", 1)
+                return float(num) / float(den) if float(den) != 0 else None
+            return float(frac)
+        except Exception:
+            return None
+
+    f_avg, f_r = to_float(avg), to_float(r)
+    if f_avg is None or f_r is None:
+        return False
+    # 兩者差超過 0.01 fps 即判定 VFR（螢幕錄影常見 avg 是奇怪的長分數）
+    return abs(f_avg - f_r) > 0.01
+
+
+def convert_to_cfr(src: Path, dst: Path) -> None:
+    """VFR → CFR 30fps。音訊 copy 不重編碼，確保 auto-editor 剪輯點不變。"""
+    cmd = [
+        "ffmpeg", "-y", "-i", str(src),
+        "-fps_mode", "cfr", "-r", "30",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
+        "-c:a", "copy",
+        str(dst),
+    ]
+    print(f"[CMD] {' '.join(cmd)}")
+    rc = subprocess.call(cmd)
+    if rc != 0:
+        print(f"[ERR] VFR→CFR 轉檔失敗，退出碼 {rc}", file=sys.stderr)
+        sys.exit(rc)
+
+
 def get_duration(path: Path) -> float:
     """用 ffprobe 取得影片秒數。"""
     out = subprocess.check_output([
@@ -59,18 +116,34 @@ def main() -> None:
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
+    # VFR（可變幀率）原始檔直接餵 auto-editor 會中途輸出黑幀（EP07 實測：2:37 後全黑）。
+    # 先轉成 CFR 30fps 暫存檔再剪；音訊 copy 不動，剪輯點與時間軸不變。
+    ae_input = args.input
+    cfr_tmp: Path | None = None
+    if detect_vfr(args.input):
+        print("[INFO] 偵測到 VFR，已先轉 CFR 再剪輯")
+        cfr_tmp = args.out.parent / f"{args.input.stem}.cfr.tmp.mp4"
+        convert_to_cfr(args.input, cfr_tmp)
+        ae_input = cfr_tmp
+
     cmd = [
         *ae,
-        str(args.input),
+        str(ae_input),
         "--margin", args.margin,
         "--edit", f"audio:threshold={args.threshold}",
         "-o", str(args.out),
     ]
     print(f"[CMD] {' '.join(cmd)}")
-    rc = subprocess.call(cmd)
+    try:
+        rc = subprocess.call(cmd)
+    finally:
+        if cfr_tmp is not None and cfr_tmp.exists():
+            cfr_tmp.unlink()
     if rc != 0:
         print(f"[ERR] auto-editor 失敗，退出碼 {rc}", file=sys.stderr)
         sys.exit(rc)
+    if cfr_tmp is not None:
+        print("[OK] 偵測到 VFR，已先轉 CFR（暫存檔已刪除）")
 
     try:
         dur_in = get_duration(args.input)
