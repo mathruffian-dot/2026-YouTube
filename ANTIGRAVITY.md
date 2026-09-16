@@ -46,3 +46,25 @@
   - **每一次封面都必須重新參考 `assets/persona/三師爸人物形象照.png`**（不可沿用舊封面或衍生圖）。
   - 風格與配色請依據 `assets/style/cover-style.md`。
   - Codex/Antigravity 版的主代表色為：亮藍 / 電子青 (`#00D4FF`、`#0099FF`)。
+
+---
+
+## Anti-Gravity 專屬總控技能與跨電腦安裝
+
+本專案已新增 Anti-Gravity 專屬總控技能：`skills/antigravity-youtube-video-workflow/`。
+
+若需要在另一台電腦上安裝並同步本技能：
+
+### 方式 1：PowerShell 一鍵線上安裝（免事先 clone）
+在任何電腦上的 PowerShell 執行：
+```powershell
+irm https://raw.githubusercontent.com/JeffreyHo0520/2026-YouTube/main/scripts/install-skills-to-antigravity.ps1 | iex
+```
+
+### 方式 2：Clone 儲存庫後本地安裝
+```powershell
+git clone https://github.com/JeffreyHo0520/2026-YouTube.git
+cd 2026-YouTube
+.\scripts\install-skills-to-antigravity.ps1
+```
+

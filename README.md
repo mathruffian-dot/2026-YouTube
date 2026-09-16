@@ -29,17 +29,20 @@ raw/<影片代號>/原始.mp4
 ```
 
 ## 對 AI Agent 的入口
+- **Anti-Gravity** → 讀 [`ANTIGRAVITY.md`](./ANTIGRAVITY.md)，使用 [`antigravity-youtube-video-workflow`](./skills/antigravity-youtube-video-workflow/SKILL.md)
 - **Claude Code** → 讀 [`CLAUDE.md`](./CLAUDE.md)
 - **ChatGPT App** → 讀 [`AGENTS.md`](./AGENTS.md)，再使用 [`chatgpt-youtube-video-workflow`](./skills/chatgpt-youtube-video-workflow/SKILL.md)
 - **OpenAI Codex CLI** → 讀 [`AGENTS.md`](./AGENTS.md)
 - **接班交接** → 讀寫 [`HANDOFF.md`](./HANDOFF.md)
 
 ## 核心 Skills
+- [`skills/antigravity-youtube-video-workflow/`](./skills/antigravity-youtube-video-workflow/SKILL.md) — **Anti-Gravity 專用最佳化總控版**（原生免 Key 生圖、一條龍剪輯、Groq 字幕、標題推薦、metadata、短片全包）
 - [`skills/chatgpt-youtube-video-workflow/`](./skills/chatgpt-youtube-video-workflow/SKILL.md) — **ChatGPT App 專用、單一資料夾可分享版**（剪輯、Groq 字幕、封面、metadata、短片全包）
 - [`skills/codex-youtube-video-workflow/`](./skills/codex-youtube-video-workflow/SKILL.md) — Codex CLI 舊版總控工作流（使用內建 Image2）
 - [`skills/claude-youtube-video-workflow/`](./skills/claude-youtube-video-workflow/SKILL.md) — Claude Code 專用總控工作流（使用 cover-image / OpenAI API）
 - [`skills/smart-cut/`](./skills/smart-cut/SKILL.md) — 智能剪口播（auto-editor）
 - [`skills/audio-to-srt/`](./skills/audio-to-srt/SKILL.md) — 語音轉字幕（Groq Whisper）
+- [`skills/short-video-workflow/`](./skills/short-video-workflow/SKILL.md) — 亮點短片剪輯（Shorts / Reels）
 - [`skills/cover-image/`](./skills/cover-image/SKILL.md) — 封面圖生成（gpt-image-2）
 
 ChatGPT 可分享版已自帶必要腳本，不需搭配 `skills-backup/`。`skills-backup/` 仍保留 Codex / Claude 舊版總控備份。
